@@ -140,7 +140,7 @@ integrations:
     port: 5432
     database: folio
     username: folio
-    # password: password
+    password: password
     charset: UTF-8
     querytimeout: 60000
     maxpoolsize: 5

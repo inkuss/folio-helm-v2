@@ -35,7 +35,6 @@ data: {{ include "folio-common.generateSecretData" (list "OKAPI" .Values.integra
 metadata:
   name: {{ printf "%s-db" (include "folio-common.fullname" .) }}
 data: {{ include "folio-common.generateSecretData" (list "DB" .Values.integrations.db) | nindent 2 }}
-  DB_PASSWORD: folio123
 {{- end -}}
 
 {{- define "folio-common.kafka.secret" -}}
