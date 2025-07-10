@@ -80,7 +80,12 @@ jmx:
 
 eureka:
   enabled: false
-  sidecarContainer: {}
+  envVars: []
+  # - name: FOO
+  #   value: ba
+  extraEnvVars: []
+  # - name: FOO
+  #   value: ba
 
 heapDumpEnabled: false
 
@@ -118,8 +123,9 @@ initContainer:
   enabled: false
   image:
     repository: busybox
+    registry: 732722833398.dkr.ecr.us-west-2.amazonaws.com
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     command: '["sh", "-c", "chown -R 1000:1000 /tmp"]'
   args:
   extraVolumeMounts:
@@ -127,6 +133,17 @@ initContainer:
       enabled: false
       name: extendedtmp
       mountPath: /tmp
+
+integrations:
+  eureka:
+    enabled: '{{ .Values.eureka.enabled }}'
+    existingSecret: "eureka-common"
+
+  kafka:
+    enabled: true
+    host: localhost
+    port: 9092
+    existingSecret: ""
 
 configMaps: {}
 

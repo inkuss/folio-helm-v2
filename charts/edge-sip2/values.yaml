@@ -83,7 +83,12 @@ jmx:
 
 eureka:
   enabled: false
-  sidecarContainer: {}
+  envVars: []
+  # - name: FOO
+  #   value: ba
+  extraEnvVars: []
+  # - name: FOO
+  #   value: ba
 
 heapDumpEnabled: false
 
@@ -121,8 +126,9 @@ initContainer:
   enabled: false
   image:
     repository: busybox
+    registry: 732722833398.dkr.ecr.us-west-2.amazonaws.com
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     command: '["sh", "-c", "chown -R 1000:1000 /tmp"]'
   args:
   extraVolumeMounts:
@@ -138,6 +144,10 @@ integrations:
     port: 9130
     url: http://okapi:9130
     existingSecret: ""
+
+  eureka-edge:
+    enabled: '{{ .Values.eureka.enabled }}'
+    existingSecret: "eureka-edge"
 
 configMaps:
   ephemeral:

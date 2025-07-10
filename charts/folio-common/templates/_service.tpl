@@ -4,6 +4,8 @@
 apiVersion: v1
 kind: Service
 {{ template "folio-common.metadata" . }}
+  annotations:
+    {{- toYaml .Values.service.annotations | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -13,11 +15,15 @@ spec:
       port: {{ .port }}
       targetPort: {{ .targetPort }}
     {{- end }}
-    {{- if .Values.eureka.enabled | default false }}
-    - name: sidecar
-      protocol: TCP
-      port: {{ .Values.eureka.sidecarContainer.port | default "8082" }}
-      targetPort: {{ .Values.eureka.sidecarContainer.port | default "8082" }}
+    {{- range $sidecarName, $sidecarConfig := .Values.sidecarContainers }}
+    {{- if eq (include "folio-common.tplvalues.render" (dict "value" $sidecarConfig.enabled "context" $)) "true" }}
+    {{- range $index, $val := $sidecarConfig.ports }}
+    - name: {{ $val.name | default "sidecar-{{ $sidecarName }}-{{ $index }}" }}
+      protocol: {{ $val.protocol | default "TCP" }}
+      port: {{ $val.port | default "8082" }}
+      targetPort: {{ "sidecar" }}
+    {{- end }}
+    {{- end }}
     {{- end }}
     {{- if .Values.jmx.enabled }}
     - name: jmx

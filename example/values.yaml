@@ -60,15 +60,12 @@ args: []
 
 eureka:
   enabled: false
-  sidecarContainer:
-      name: sidecar
-      image: folioorg/folio-module-sidecar
-      tag: latest
-      containerPort: 8082
-      port: 8082
-      amClientUrl: http://mgr-applications
-      teClientUrl: http://mgr-tenant-entitlements
-      tmClientUrl: http://mgr-tenants
+  envVars: []
+    # - name: FOO
+    #   value: ba
+  extraEnvVars: []
+    # - name: FOO
+    #   value: ba
 
 ## @param javaOpts Custom JVM parameters
 ##
@@ -77,6 +74,10 @@ javaOpts: []
 extraJavaOpts:
   - "-XX:MaxRAMPercentage=75.0"
   # - "-Dlog_level=DEBUG"
+
+envVars: []
+  # - name: FOO
+  #   value: bar
 
 extraEnvVars: []
   # - name: FOO
@@ -128,8 +129,9 @@ initContainer:
   enabled: false
   image:
     repository: busybox
+    registry: 732722833398.dkr.ecr.us-west-2.amazonaws.com
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   command: '["sh", "-c", "chown -R 1000:1000 /tmp"]'
   args:
   extraVolumeMounts:
@@ -137,6 +139,30 @@ initContainer:
       enabled: false
       name: extendedtmp
       mountPath: /tmp
+
+sidecarContainers:
+  eureka:
+    enabled: '{{ .Values.eureka.enabled }}'
+    name: sidecar
+    image:
+      repository: folioorg/folio-module-sidecar
+      pullPolicy: IfNotPresent
+      tag: latest
+    envVars:
+      - '{{ include "folio-common.sidecar.env.eureka.common" . }}'
+    extraEnvVars: []
+      # - name: FOO
+      #   value: bar
+    ports:
+      - name: sidecar
+        protocol: TCP
+        port: 8082
+        containerPort: 8082
+    resources:
+      limits:
+        memory: 96Mi
+      requests:
+        memory: 64Mi
 
 integrations:
   okapi:
@@ -191,6 +217,14 @@ integrations:
     secretAccessKey: ""
     forcepathstyle: ""
     existingSecret: ""
+
+  eureka:
+    enabled: '{{ .Values.eureka.enabled }}'
+    existingSecret: "eureka-common"
+
+  eureka-edge:
+    enabled: '{{ .Values.eureka.enabled }}'
+    existingSecret: "eureka-edge"
 
 configMaps:
   ephemeral:

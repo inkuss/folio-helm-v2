@@ -60,7 +60,7 @@ args: []
 ## @param javaOpts Custom JVM parameters
 ##
 javaOpts:
-  - "-Dokapi_url=http://$(OKAPI_HOST):$(OKAPI_PORT)"
+  - "-Dfolio.client.okapiUrl=http://$(OKAPI_HOST):$(OKAPI_PORT)"
 
 extraJavaOpts:
   - "-XX:MaxRAMPercentage=75.0"
@@ -82,7 +82,12 @@ heapDumpEnabled: false
 
 eureka:
   enabled: false
-  sidecarContainer: {}
+  envVars: []
+  # - name: FOO
+  #   value: ba
+  extraEnvVars: []
+  # - name: FOO
+  #   value: ba
 
 volumeClaims:
   extendedtmp:
@@ -118,8 +123,9 @@ initContainer:
   enabled: false
   image:
     repository: busybox
+    registry: 732722833398.dkr.ecr.us-west-2.amazonaws.com
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     command: '["sh", "-c", "chown -R 1000:1000 /tmp"]'
   args:
   extraVolumeMounts:
@@ -135,6 +141,10 @@ integrations:
     port: 9130
     url: http://okapi:9130
     existingSecret: ""
+
+  eureka-edge:
+    enabled: '{{ .Values.eureka.enabled }}'
+    existingSecret: "eureka-edge"
 
 configMaps:
   ephemeral:

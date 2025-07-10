@@ -4,7 +4,7 @@
 
 image:
   repository: folioorg/mod-scheduler
-  pullPolicy: Always
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
@@ -60,7 +60,12 @@ args: []
 
 eureka:
   enabled: false
-  sidecarContainer: {}
+  envVars: []
+  # - name: FOO
+  #   value: ba
+  extraEnvVars: []
+  # - name: FOO
+  #   value: ba
 
 ## @param javaOpts Custom JVM parameters
 ##
@@ -70,9 +75,9 @@ extraJavaOpts:
   - "-XX:MaxRAMPercentage=75.0"
   # - "-Dlog_level=DEBUG"
 
-extraEnvVars:
-  - name: OKAPI_URL
-    value: 'http://mod-scheduler:8082'
+extraEnvVars: []
+  # - name: FOO
+  #   value: bar
 
 extraEnvVarsSecrets: []
   # = foo-secret
@@ -118,8 +123,9 @@ initContainer:
   enabled: false
   image:
     repository: busybox
+    registry: 732722833398.dkr.ecr.us-west-2.amazonaws.com
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     command: '["sh", "-c", "chown -R 1000:1000 /tmp"]'
   args:
   extraVolumeMounts:
@@ -128,7 +134,34 @@ initContainer:
       name: extendedtmp
       mountPath: /tmp
 
-integrations: {}
+sidecarContainers:
+  eureka:
+    enabled: '{{ .Values.eureka.enabled }}'
+    name: sidecar
+    image:
+      repository: folioorg/folio-module-sidecar
+      pullPolicy: IfNotPresent
+      tag: latest
+    envVars:
+      - '{{ include "folio-common.sidecar.env.eureka.common" . }}'
+    extraEnvVars: []
+      # - name: FOO
+      #   value: bar
+    ports:
+      - name: sidecar
+        protocol: TCP
+        port: 8082
+        containerPort: 8082
+    resources:
+      limits:
+        memory: 400Mi
+      requests:
+        memory: 200Mi
+
+integrations:
+  eureka:
+    enabled: '{{ .Values.eureka.enabled }}'
+    existingSecret: "eureka-common"
 
 configMaps: {}
 

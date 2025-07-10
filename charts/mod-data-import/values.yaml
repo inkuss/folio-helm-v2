@@ -60,7 +60,12 @@ args: []
 
 eureka:
   enabled: false
-  sidecarContainer: {}
+  envVars: []
+  # - name: FOO
+  #   value: ba
+  extraEnvVars: []
+  # - name: FOO
+  #   value: ba
 
 ## @param javaOpts Custom JVM parameters
 ##
@@ -70,17 +75,9 @@ extraJavaOpts:
   - "-XX:MaxRAMPercentage=75.0"
   # - "-Dlog_level=DEBUG"
 
-envVars:
-  - name: SPLIT_FILES_ENABLED
-    value: "true"
-  - name: RECORDS_PER_SPLIT_FILE
-    value: "1000"
-  - name: ASYNC_PROCESSOR_POLL_INTERVAL_MS
-    value: "5000"
-  - name: ASYNC_PROCESSOR_MAX_WORKERS_COUNT
-    value: "1"
-  - name: KAFKA_PRODUCER_TENANT_COLLECTION
-    value: "ALL"
+envVars: []
+  # - name: FOO
+  #   value: bar
 
 extraEnvVars: []
   # - name: FOO
@@ -130,8 +127,9 @@ initContainer:
   enabled: false
   image:
     repository: busybox
+    registry: 732722833398.dkr.ecr.us-west-2.amazonaws.com
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     command: '["sh", "-c", "chown -R 1000:1000 /tmp"]'
   args:
   extraVolumeMounts:
@@ -139,6 +137,30 @@ initContainer:
       enabled: false
       name: extendedtmp
       mountPath: /tmp
+
+sidecarContainers:
+  eureka:
+    enabled: '{{ .Values.eureka.enabled }}'
+    name: sidecar
+    image:
+      repository: folioorg/folio-module-sidecar
+      pullPolicy: IfNotPresent
+      tag: latest
+    envVars:
+      - '{{ include "folio-common.sidecar.env.eureka.common" . }}'
+    extraEnvVars: []
+      # - name: FOO
+      #   value: bar
+    ports:
+      - name: sidecar
+        protocol: TCP
+        port: 8082
+        containerPort: 8082
+    resources:
+      limits:
+        memory: 400Mi
+      requests:
+        memory: 200Mi
 
 integrations:
   db:

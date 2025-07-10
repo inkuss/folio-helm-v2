@@ -60,7 +60,12 @@ args: []
 
 eureka:
   enabled: false
-  sidecarContainer: {}
+  envVars: []
+  # - name: FOO
+  #   value: ba
+  extraEnvVars: []
+  # - name: FOO
+  #   value: ba
 
 ## @param javaOpts Custom JVM parameters
 ##
