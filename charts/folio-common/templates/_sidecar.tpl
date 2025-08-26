@@ -102,6 +102,16 @@ Sidecar env vars part of container specs.
     secretKeyRef:
       name: eureka-common
       key: SECRET_STORE_AWS_SSM_REGION
+- name: SECRET_STORE_VAULT_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: eureka-common
+      key: SECRET_STORE_VAULT_TOKEN
+- name: SECRET_STORE_VAULT_ADDRESS
+  valueFrom:
+    secretKeyRef:
+      name: eureka-common
+      key: SECRET_STORE_VAULT_ADDRESS
 - name: ENV
   valueFrom:
     secretKeyRef:
