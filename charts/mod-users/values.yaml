@@ -165,11 +165,11 @@ sidecarContainers:
 integrations:
   db:
     enabled: true
-    host: postgresql
+    host: folio-zal-pg
     hostReader: ""
     port: 5432
     database: folio
-    username: admin
+    username: folio
     password: password
     charset: UTF-8
     querytimeout: 60000
