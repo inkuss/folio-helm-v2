@@ -50,6 +50,9 @@ data: {{ include "folio-common.generateSecretData" (list "OPENSEARCH" .Values.in
 {{ include "folio-common.generateSecretData" (list "ELASTICSEARCH" .Values.integrations.opensearch) | nindent 2 }}
 {{- end -}}
 
+{{/*
+data: SYSTEM_USER_NAME: {{ (include "folio-common.fullname" .) | toString | b64enc | quote | nindent 2 }}
+*/}}
 {{- define "folio-common.systemuser.secret" -}}
 metadata:
   name: {{ printf "%s-systemuser" (include "folio-common.fullname" .) }}

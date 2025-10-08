@@ -162,6 +162,9 @@ integrations:
   eureka:
     enabled: '{{ .Values.eureka.enabled }}'
     existingSecret: "eureka-common"
+  systemuser:
+    enabled: true
+    name: mod-scheduler
 
 configMaps: {}
 
